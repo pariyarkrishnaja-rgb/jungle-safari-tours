@@ -1116,6 +1116,19 @@ nav a:hover {
   gap: 15px;
 }
 
+.badge-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  margin-top: 1.5rem;
+}
+
+@media (max-width: 768px) {
+  .badge-row {
+    grid-template-columns: 1fr;
+  }
+}
+
 .payment-badge-icon {
   font-size: 1.8rem;
   color: var(--accent);
