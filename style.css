@@ -85,6 +85,10 @@ h2.section-title.center::after {
   margin: 10px auto 0 auto;
 }
 
+h2.section-title.no-line::after {
+  display: none;
+}
+
 p {
   margin-bottom: 1.25rem;
 }
@@ -521,8 +525,7 @@ nav a:hover {
   font-size: 1.15rem;
   font-weight: 600;
   color: var(--primary-light);
-  border-left: 3px solid var(--accent);
-  padding-left: 1.5rem;
+  font-style: italic;
   margin-bottom: 1.5rem;
 }
 
