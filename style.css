@@ -2703,3 +2703,215 @@ footer {
     transform: scale(1.1) translateY(-2px);
     color: var(--accent);
   }
+
+  /* ==========================================================================
+     WEATHER FORECAST MODAL & BUTTON
+     ========================================================================== */
+  /* Modal Overlay */
+  .modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(8px);
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+  }
+
+  .modal-overlay.active {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  /* Modal Card */
+  .weather-modal-card {
+    background: var(--bg-white);
+    color: var(--text-color);
+    width: 90%;
+    max-width: 500px;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-lg);
+    padding: 2rem;
+    position: relative;
+    transform: translateY(-20px);
+    transition: transform 0.3s ease;
+  }
+
+  .modal-overlay.active .weather-modal-card {
+    transform: translateY(0);
+  }
+
+  .weather-modal-close {
+    position: absolute;
+    top: 1rem;
+    right: 1.25rem;
+    background: transparent;
+    border: none;
+    font-size: 2rem;
+    font-weight: bold;
+    color: var(--text-muted);
+    cursor: pointer;
+    line-height: 1;
+    transition: var(--transition);
+  }
+
+  .weather-modal-close:hover {
+    color: var(--accent);
+  }
+
+  .weather-header h3 {
+    font-size: 1.5rem;
+    color: var(--primary);
+    margin: 0 0 0.2rem 0;
+    font-family: var(--font-heading);
+  }
+
+  .weather-sub {
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    margin: 0 0 1.5rem 0;
+  }
+
+  /* Loader styling */
+  .weather-loader {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem 0;
+    gap: 15px;
+  }
+
+  .spinner {
+    width: 35px;
+    height: 35px;
+    border: 3.5px solid rgba(0, 0, 0, 0.1);
+    border-left-color: var(--primary);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+  }
+
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+
+  /* Current Weather Layout */
+  .weather-current-card {
+    background: linear-gradient(135deg, var(--primary-light), var(--primary));
+    color: white;
+    padding: 1.25rem;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+  }
+
+  .weather-current-main {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 1rem;
+  }
+
+  .weather-large-icon {
+    font-size: 3.2rem;
+  }
+
+  .weather-temp {
+    font-size: 2.5rem;
+    font-weight: bold;
+    font-family: var(--font-heading);
+    line-height: 1.1;
+  }
+
+  .weather-desc {
+    font-size: 1.05rem;
+    opacity: 0.9;
+    text-transform: capitalize;
+  }
+
+  .weather-details-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    border-top: 1px solid rgba(255, 255, 255, 0.15);
+    padding-top: 0.75rem;
+  }
+
+  .weather-detail-item {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.85rem;
+  }
+
+  .detail-label {
+    opacity: 0.8;
+  }
+
+  .detail-val {
+    font-weight: bold;
+  }
+
+  /* Forecast Outlook List */
+  .weather-forecast-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    max-height: 220px;
+    overflow-y: auto;
+    margin-top: 1rem;
+    padding-right: 5px;
+  }
+
+  /* Custom Scrollbar for forecast list */
+  .weather-forecast-list::-webkit-scrollbar {
+    width: 6px;
+  }
+  .weather-forecast-list::-webkit-scrollbar-thumb {
+    background-color: var(--border);
+    border-radius: 4px;
+  }
+
+  .weather-forecast-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.65rem 0.9rem;
+    background-color: var(--bg-light);
+    border-radius: var(--radius);
+    transition: var(--transition);
+    cursor: pointer;
+  }
+
+  .weather-forecast-item:hover {
+    background-color: var(--border);
+  }
+
+  .forecast-date {
+    font-weight: bold;
+    font-size: 0.85rem;
+    color: var(--primary);
+    width: 105px;
+  }
+
+  .forecast-emoji-desc {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex: 1;
+  }
+
+  .forecast-emoji {
+    font-size: 1.3rem;
+  }
+
+  .forecast-temp-range {
+    font-size: 0.85rem;
+    font-weight: bold;
+    color: var(--text-color);
+  }

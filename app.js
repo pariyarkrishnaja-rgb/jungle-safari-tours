@@ -908,4 +908,152 @@ Please let me know if these dates are open. We prefer to pay via [PayPal / Cash 
       }
     });
   }
+
+  // ==========================================
+  // WEATHER FORECAST LOGIC
+  // ==========================================
+  const weatherBtn = document.getElementById('weather-btn');
+  const weatherModal = document.getElementById('weather-modal');
+  const closeWeatherBtn = document.getElementById('close-weather-btn');
+
+  if (weatherBtn && weatherModal && closeWeatherBtn) {
+    // Open modal
+    weatherBtn.addEventListener('click', () => {
+      weatherModal.classList.add('active');
+      fetchWeather();
+    });
+
+    // Close modal
+    const closeWeather = () => {
+      weatherModal.classList.remove('active');
+    };
+
+    closeWeatherBtn.addEventListener('click', closeWeather);
+    weatherModal.addEventListener('click', (e) => {
+      if (e.target === weatherModal) {
+        closeWeather();
+      }
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && weatherModal.classList.contains('active')) {
+        closeWeather();
+      }
+    });
+  }
+
+  // Weather description mapper based on WMO codes
+  function getWeatherDescription(code) {
+    const mapping = {
+      0: { desc: 'Clear sky', emoji: '☀️' },
+      1: { desc: 'Mainly clear', emoji: '🌤️' },
+      2: { desc: 'Partly cloudy', emoji: '⛅' },
+      3: { desc: 'Overcast', emoji: '☁️' },
+      45: { desc: 'Foggy', emoji: '🌫️' },
+      48: { desc: 'Depositing rime fog', emoji: '🌫️' },
+      51: { desc: 'Light drizzle', emoji: '🌧️' },
+      53: { desc: 'Moderate drizzle', emoji: '🌧️' },
+      55: { desc: 'Dense drizzle', emoji: '🌧️' },
+      61: { desc: 'Slight rain', emoji: '🌧️' },
+      63: { desc: 'Moderate rain', emoji: '🌧️' },
+      65: { desc: 'Heavy rain', emoji: '🌧️' },
+      80: { desc: 'Slight rain showers', emoji: '🌦️' },
+      81: { desc: 'Moderate rain showers', emoji: '🌦️' },
+      82: { desc: 'Violent rain showers', emoji: '🌦️' },
+      95: { desc: 'Thunderstorm', emoji: '⛈️' },
+      96: { desc: 'Thunderstorm with slight hail', emoji: '⛈️' },
+      99: { desc: 'Thunderstorm with heavy hail', emoji: '⛈️' }
+    };
+    return mapping[code] || { desc: 'Cloudy', emoji: '☁️' };
+  }
+
+  // Fetch weather from open-meteo (Sauraha, Chitwan: 27.58, 84.49)
+  async function fetchWeather() {
+    const loading = document.getElementById('weather-loading');
+    const content = document.getElementById('weather-content');
+    
+    // Reset loader state
+    loading.style.display = 'flex';
+    content.style.display = 'none';
+
+    try {
+      const res = await fetch('https://api.open-meteo.com/v1/forecast?latitude=27.5824&longitude=84.4886&current=temperature_2m,relative_humidity_2m,apparent_temperature,precipitation,rain,weather_code,wind_speed_10m&daily=weather_code,temperature_2m_max,temperature_2m_min,apparent_temperature_max,apparent_temperature_min,precipitation_sum,rain_sum,wind_speed_10m_max&timezone=auto');
+      const data = await res.json();
+      
+      if (!data || !data.current || !data.daily) {
+        throw new Error('Invalid weather response');
+      }
+
+      // 1. Populate current weather
+      const current = data.current;
+      const currentMap = getWeatherDescription(current.weather_code);
+      document.getElementById('current-weather-emoji').innerText = currentMap.emoji;
+      document.getElementById('current-temp').innerText = `${Math.round(current.temperature_2m)}°C`;
+      document.getElementById('current-desc').innerText = currentMap.desc;
+      document.getElementById('current-feels').innerText = `${Math.round(current.apparent_temperature)}°C`;
+      document.getElementById('current-humidity').innerText = `${current.relative_humidity_2m}%`;
+      document.getElementById('current-wind').innerText = `${current.wind_speed_10m} km/h`;
+      document.getElementById('current-rain').innerText = `${current.precipitation} mm`;
+
+      // 2. Populate 7-day forecast
+      const daily = data.daily;
+      const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+      const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+      const container = document.getElementById('forecast-container');
+      
+      container.innerHTML = ''; // Clear previous elements
+
+      daily.time.forEach((timeStr, index) => {
+        const date = new Date(timeStr);
+        let dayName = days[date.getDay()];
+        let dateLabel = `${dayName}, ${months[date.getMonth()]} ${date.getDate()}`;
+        if (index === 0) dateLabel = 'Today';
+        if (index === 1) dateLabel = 'Tomorrow';
+
+        const maxTemp = Math.round(daily.temperature_2m_max[index]);
+        const minTemp = Math.round(daily.temperature_2m_min[index]);
+        const code = daily.weather_code[index];
+        const map = getWeatherDescription(code);
+
+        const item = document.createElement('div');
+        item.className = 'weather-forecast-item';
+        item.innerHTML = `
+          <span class="forecast-date">${dateLabel}</span>
+          <div class="forecast-emoji-desc">
+            <span class="forecast-emoji">${map.emoji}</span>
+            <span style="font-size: 0.85rem; color: var(--text-color); opacity: 0.85;">${map.desc}</span>
+          </div>
+          <span class="forecast-temp-range">${maxTemp}° / ${minTemp}°C</span>
+        `;
+
+        // Click day to inspect full outlook details dynamically
+        item.addEventListener('click', () => {
+          document.getElementById('current-weather-emoji').innerText = map.emoji;
+          document.getElementById('current-temp').innerText = `${maxTemp}°C`;
+          document.getElementById('current-desc').innerText = `${map.desc} (Outlook)`;
+          document.getElementById('current-feels').innerText = `${Math.round(daily.apparent_temperature_max[index])}°C`;
+          document.getElementById('current-humidity').innerText = 'N/A';
+          document.getElementById('current-wind').innerText = `${daily.wind_speed_10m_max[index]} km/h`;
+          document.getElementById('current-rain').innerText = `${daily.precipitation_sum[index]} mm`;
+
+          // Visual highlight
+          document.querySelectorAll('.weather-forecast-item').forEach(el => {
+            el.style.border = 'none';
+            el.style.backgroundColor = 'var(--bg-light)';
+          });
+          item.style.border = '1px solid var(--accent)';
+          item.style.backgroundColor = 'var(--border)';
+        });
+
+        container.appendChild(item);
+      });
+
+      loading.style.display = 'none';
+      content.style.display = 'block';
+
+    } catch (err) {
+      console.error('Weather API Error:', err);
+      loading.innerHTML = `<p style="color: var(--accent); font-weight: bold; text-align: center;">Could not load weather. Please check your network connection.</p>`;
+    }
+  }
 });
