@@ -500,6 +500,7 @@ Please let me know if these dates are open. We prefer to pay via [PayPal / Cash 
       e.preventDefault();
       
       const clientName = document.getElementById('booking-name').value;
+      const clientPhone = document.getElementById('booking-phone').value;
       const clientEmail = document.getElementById('booking-email').value;
       const clientSize = document.getElementById('booking-groupsize').value;
       const clientDate = document.getElementById('booking-date').value;
@@ -507,7 +508,7 @@ Please let me know if these dates are open. We prefer to pay via [PayPal / Cash 
 
       // Construct a mailto link to Krishna's official email
       const subject = encodeURIComponent(`Booking Inquiry - Jungle Safari Tours Chitwan (${clientDate})`);
-      const bodyText = encodeURIComponent(`Client Name: ${clientName}\nEmail: ${clientEmail}\nGroup Size: ${clientSize} Person(s)\nDate: ${clientDate}\n\n${customMsg}`);
+      const bodyText = encodeURIComponent(`Client Name: ${clientName}\nPhone: ${clientPhone}\nEmail: ${clientEmail}\nGroup Size: ${clientSize} Person(s)\nDate: ${clientDate}\n\n${customMsg}`);
       
       window.location.href = `mailto:Pariyarkrishnaja@gmail.com?subject=${subject}&body=${bodyText}`;
 
